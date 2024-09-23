@@ -28,6 +28,12 @@ with app.app_context():
 def index():
     return render_template('index.html')
 
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
+#Add sermon route
+
 @app.route('/add_sermons', methods = ['POST', 'GET'])
 
 #POST AND GET METHODS
@@ -36,6 +42,7 @@ def index():
 #? - for example : When you type a query into Google's search bar and hit enter, a GET request is sent with the query parameters and google returns the search results
 
 #? -POST Method The POST method is used to send data to the server to create or update resources. It is commonly used when submitting form data or uploading files
+
 def add_sermons():
     if request.method == 'POST':
         sermon_name = request.form['name']
@@ -72,6 +79,12 @@ def add_sermons():
     
     
     return render_template('/add_sermons.html')
+
+# Profile route 
+
+@app.route('/user_profile')
+def user_profile():
+    return render_template('users-profile.html')
 
 @app.route('/api')
 def api():
