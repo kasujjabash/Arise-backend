@@ -4,6 +4,7 @@ from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import desc
 from werkzeug.utils import secure_filename # This is for uploads, Its used to security, 
+# from flask import jsonify, request
 # from models.model import Sermon
 
 app = Flask(__name__)
@@ -12,8 +13,19 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sermons.db'
 app.config['UPLOAD_FOLDER'] = 'static/sermons'
 db = SQLAlchemy(app)
 
+#? MODELS IN THE SYSTEM
+
+
+#?User model
+class User(db.Model):
+    __tablename__ = 'user' #this is a table name for the admin users
+    id = db.Column(db.Integer, primary_key = True)
+    username = db.Column(db.String(150), unique=True, nullable=False)
+    password_hash = db.Column(db.String(150), nullable=False)
+    
+#?Sermon model
 class Sermon(db.Model):
-    __tablename__ = 'sermon' #?This is a tabele name
+    __tablename__ = 'sermon' #?This is a table name
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(150))
     description= db.Column(db.String(250))
@@ -21,14 +33,43 @@ class Sermon(db.Model):
     path = db.Column(db.String(250))
     created_at = db.Column(db.DateTime, default = datetime.now(timezone.utc))
     
+#?Video Sermon model
+class Video(db.Model):
+    __tablename__ = 'video' #?This is a table name
+    id = db.Column(db.Integer, primary_key = True) 
+    video_title = db.Column(db.String(150))
+    preacher = db.Column(db.String(100), nullable=False)
+    thumbnail = db.Column(db.String(250))
+    youtube_url = db.Column(db.String(255), nullable=False)
+    created_at = db.Column(db.DateTime, default = datetime.now(timezone.utc))
+    
 with app.app_context():
     db.create_all()
 
 
-@app.route('/')
-
 #?? THIS IS THE SERMON DYNAMIC FUNCTION 
+# Login route
 
+@app.route('/login')
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        
+        # Query the database for the user
+        user = User.query.filter_by(username=username).first()
+        
+        # Check if the user exists and the password is correct
+        if user and user.password_hash == password:
+            return 'Login successful'
+        else:
+            return 'Login failed'
+        
+    return render_template('login.html')
+
+# Home index route
+
+@app.route('/') #This is the home route
 def index():
     try:
         # Page-nation (Page size/items)
@@ -58,9 +99,6 @@ def index():
 
         
 
-@app.route('/login')
-def login():
-    return render_template('login.html')
 
 # register route 
 @app.route('/register')
@@ -116,6 +154,42 @@ def add_sermons():
     
     return render_template('/add_sermons.html')
 
+#Delete Audio sermon route
+
+@app.route('/delete_sermon/<int:id>', methods=['DELETE'])
+def delete_sermon(id):
+    try:
+        # Query the sermon by ID
+        sermon = Sermon.query.get(id)
+        if sermon is None:
+            return jsonify({"error": "Sermon not found"}), 404
+
+        # Delete the sermon
+        db.session.delete(sermon)
+        db.session.commit()
+        return jsonify({"message": "Sermon deleted successfully"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+#Delete Video sermon route
+#  TODO Make this code work for the deleting button in the video sermons page
+
+@app.route('/delete_video/<int:id>', methods=['DELETE'])
+def delete_video(id):
+    try:
+        # Query the sermon by ID
+        video = Video.query.get(id)
+        if video is None:
+            return jsonify({"error": "Video Sermon not found"}), 404
+
+        # Delete the sermon
+        db.session.delete(video)
+        db.session.commit()
+        return jsonify({"message": "Video deleted successfully"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 # Profile route 
 
 @app.route('/user_profile')
@@ -128,9 +202,9 @@ def api():
     sermons = Sermon.query.all()
     return jsonify([{'id':sermon.id, 'name': sermon.name, 'description': sermon.description , 'thumbnail': sermon.thumbnail, 'path': sermon.path, 'created_at': sermon.created_at} for sermon in sermons])
 
-@app.route('/movie')
-def movie():
-    return 'This is the movie page'
+# @app.route('/movie')
+# def movie():
+#     return 'This is the movie page'
 
 
 #! Dynamic routes
@@ -145,15 +219,51 @@ def sermon_details():
     return f"This is a sermon detail for sermon with id : {id}"
 #  Update the url to display the sermon name by passing the sermon id 
 
+@app.route('/add_devotions')
+def add_devotions():
+    return render_template('add_devotions.html')
 
-@app.route('/url_update')#? test one
-def url_update():
-    url = request.args.get('url',1,type=int)
-    return f"Updated url : {url}"
 
-app.route('/url_updates/<url_2>')
-def sermon_detail(url_2):
-    return f"This is a sermon detail for sermon with id : {url_2}"
+#? V I D E O   S E R M O N S
+#video sermons route
+@app.route('/video_sermons')
+def video_sermons():
+    videos = Video.query.all()  # Query all videos
+    return render_template('video_sermons.html', videos=videos)
+
+# Add video sermon 
+@app.route ('/add_video_sermon', methods = ['POST', 'GET'])
+
+#function to add video 
+def add_video():
+    if request.method == 'POST':
+        video_title = request.form['video_title']
+        preacher = request.form['preacher']
+        youtube_url = request.form['youtube_url']
+        thumbnail = request.files['thumbnail']
+        
+        
+        # get the paths of the images and audio
+        thumbnail_name = secure_filename(thumbnail.filename)
+        
+        #save image path to the server and get the file path
+        thumbnail_path = os.path.join(app.config['UPLOAD_FOLDER']+"/thumbnails" , thumbnail_name)
+        thumbnail.save(thumbnail_path)
+        
+        #adding the form data to the database
+        new_video = Video(
+            video_title = video_title,
+            preacher = preacher,
+            youtube_url = youtube_url, 
+            thumbnail = thumbnail_path
+        )
+        
+        # add data to database
+        db.session.add(new_video)
+        db.session.commit()
+
+        return f'We have posted  {video_title}'
+    return render_template('/add_video_sermons.html')
 
 
 if __name__ == '__main__':

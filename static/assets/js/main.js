@@ -317,3 +317,94 @@
   }
 
 })();
+
+// Function to delete a Audio sermon
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const deleteButtons = document.querySelectorAll('.delete-btn');
+    
+    deleteButtons.forEach(button => {
+      button.addEventListener('click', function () {
+        const sermonId = this.getAttribute('data-id');
+        
+        // Show confirmation popup
+        const userConfirmed = confirm("Are you sure you want to delete this sermon?");
+        
+        if (userConfirmed) {
+          // If the user confirms, proceed with the delete request
+          fetch(`/delete_sermon/${sermonId}`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.message === "Sermon deleted successfully") {
+              // Remove the sermon from the UI
+              const sermonItem = document.querySelector(`li[data-id="${sermonId}"]`);
+              if (sermonItem) {
+                sermonItem.remove();
+              }
+            } else {
+              alert("Error deleting sermon: " + (data.error || "Unknown error"));
+            }
+          })
+          .catch(error => {
+            console.error("Error:", error);
+            alert("Error deleting sermon: " + error.message);
+          });
+        } else {
+          // If the user cancels, do nothing
+          console.log("User canceled the deletion.");
+        }
+      });
+    });
+  });
+
+
+// TODO Make this js code work for the delete button in the video sermons page
+// Function to delete a Video sermon
+
+document.addEventListener('DOMContentLoaded', function () {
+  const deleteButtons = document.querySelectorAll('.delete-btn');
+  
+  deleteButtons.forEach(button => {
+    button.addEventListener('click', function () {
+      const videoId = this.getAttribute('data-id');
+      
+      // Show confirmation popup
+      const userConfirmed = confirm("Are you sure you want to delete this Video sermon?");
+      
+      if (userConfirmed) {
+        // If the user confirms, proceed with the delete request
+        fetch(`/delete_video/${videoId}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.message === "Video Sermon deleted successfully") {
+            // Remove the sermon from the UI
+            const videoItem = document.querySelector(`li[data-id="${videoId}"]`);
+            if (videoItem) {
+              videoItem.remove();
+            }
+          } else {
+            alert("Error deleting sermon: " + (data.error || "Unknown error"));
+          }
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          alert("Error deleting sermon: " + error.message);
+        });
+      } else {
+        // If the user cancels, do nothing
+        console.log("User canceled the deletion.");
+      }
+    });
+  });
+});
+

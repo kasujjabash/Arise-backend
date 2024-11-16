@@ -287,7 +287,14 @@
         </a>
       </li>End Profile Page Nav -->
       
-      
+      <!-- Add devotion  -->
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="/add_devotions">
+          <i class="bi bi-arrow-bar-up"></i>
+          <span>Add Devotions</span>
+        </a>
+      </li><!-- End Add devotion Page Nav -->
+
       <!-- Add sermon  -->
       <li class="nav-item">
         <a class="nav-link collapsed" href="/add_sermons">
@@ -296,6 +303,15 @@
         </a>
       </li><!-- End Add Sermon Page Nav -->
 
+      <!-- Add video sermons -->
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="/add_video_sermon">
+          <i class="bi bi-arrow-bar-up"></i>
+          <span>Add Video Sermons</span>
+        </a>
+      </li><!-- End Add video sermons -->
+
+      <!-- register -->
       <li class="nav-item">
         <a class="nav-link collapsed" href="/register">
           <i class="bi bi-card-list"></i>
@@ -339,7 +355,7 @@
               <div class="card info-card sales-card">
 
                 <div class="card-body">
-                  <h5 class="card-title">Sermon(s) </h5>
+                  <h5 class="card-title">Audio Sermon(s) </h5>
 
                   <div class="d-flex align-items-center">
                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
@@ -362,7 +378,7 @@
 
                <!--PLAYS-->
                 <div class="card-body">
-                  <h5 class="card-title">Play(s)</h5>
+                 <a href="/video_sermons"> <h5 class="card-title">Video Sermons(s)</h5></a>
 
                   <div class="d-flex align-items-center">
                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
@@ -385,7 +401,7 @@
               <div class="card info-card customers-card">
 
                 <div class="card-body">
-                  <h5 class="card-title">Shares <span></h5>
+                  <h5 class="card-title">Devotions <span></h5>
 
                   <div class="d-flex align-items-center">
                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
@@ -404,23 +420,25 @@
             </div><!-- End Customers Card -->
 
             <!-- All sermons -->
-             <section style="padding: 20px; background-color: #f9f9f9; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
-              <h2 style="font-size: 24px; color: #333; margin-bottom: 15px;">All Sermons</h2>
-              <ul style="list-style-type: none; padding: 0;">
-                {% for sermon in sermons %}
-                <li style="margin-bottom: 20px; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background-color: #fff;">
-                  <strong style="font-size: 18px; color: #555;">{{ sermon.name }}</strong>: 
-                  <span style="color: #777;">{{ sermon.description }}</span><br>
-                  <!-- This is the image path  -->
-                  <img src="{{ sermon.thumbnail }}" alt="{{ sermon.name }} thumbnail" style="width: 100px; height: auto; margin-top: 10px; border-radius: 5px;">
-                  <div style="margin-top: 10px;">
-                    <!-- This is the audio controller -->
-                    <audio controls style="width: 100%;">
-                      <source src="{{ sermon.path }}" type="audio/mpeg">
-                      Your browser does not support the audio element.
-                  </audio>
-              </div>
-          </li>
+  <section style="padding: 20px; background-color: #f9f9f9; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
+  <h2 style="font-size: 24px; color: #333; margin-bottom: 15px;">All Sermons</h2>
+  <ul style="list-style-type: none; padding: 0;">
+      {% for sermon in sermons %}
+      <li data-id="{{ sermon.id }}" style="margin-bottom: 20px; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background-color: #fff;">
+          <strong style="font-size: 18px; color: #555;">{{ sermon.name }}</strong>: 
+          <span style="color: #777;">{{ sermon.description }}</span><br>
+          <img src="{{ sermon.thumbnail }}" alt="{{ sermon.name }} thumbnail" style="width: 100px; height: auto; margin-top: 10px; border-radius: 5px;">
+          <div style="margin-top: 10px;">
+              <audio controls style="width: 100%;">
+                  <source src="{{ sermon.path }}" type="audio/mpeg">
+                  Your browser does not support the audio element.
+              </audio>
+              <small>Posted on: {{ sermon.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+          </div>
+          <button class="delete-btn" data-id="{{ sermon.id }}" style="background-color: #e74c3c; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; margin-top: 10px;">
+              Delete
+          </button>
+      </li>
       {% endfor %}
   </ul>
 </section>
@@ -711,7 +729,7 @@
       <!-- You can delete the links only if you purchased the pro version. -->
       <!-- Licensing information: https://bootstrapmade.com/license/ -->
       <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
-      Designed by <a href="https://bashir-kasujja.onrender.com/">Bashir Kasujja</a>
+    <p style="color: green;">Designed by <a href="https://bashirkasujja.com/">Bashir Kasujja</a></p>  
     </div>
   </footer><!-- End Footer -->
 

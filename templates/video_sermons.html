@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Dashboard - NiceAdmin Bootstrap Template</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="static/assets/img/favicon.png" rel="icon">
+  <link href="static/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="static/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="static/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="static/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="static/assets/vendor/quill/quill.snow.css" rel="stylesheet">
+  <link href="static/assets/vendor/quill/quill.bubble.css" rel="stylesheet">
+  <link href="static/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="static/assets/vendor/simple-datatables/style.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="static/assets/css/style.css" rel="stylesheet">
+
+</head>
+
+<body>
+  <h3 class="text-center my-4">Videos Sermons</h3>
+
+  <div class="container">
+    <div class="row">
+      <!-- Loop through all the videos and display them in 3 columns -->
+      {% for video in videos %}
+        <div class="col-md-4 mb-4">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">{{ video.video_title }}</h5>  <!-- Video title -->
+              <h6 class="card-subtitle mb-2 text-muted">Preacher: {{ video.preacher }}</h6>  <!-- Preacher name -->
+              <iframe width="100%" height="250" 
+                      src="{{ video.youtube_url }}" 
+                      frameborder="0" 
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                      allowfullscreen>
+              </iframe>  <!-- YouTube video embed -->
+              
+              <!-- Delete button -->
+               <!-- TODO Make this button work for deleting the sermon -->
+              <button class="delete-btn" data-id="{{ video.id }}" style="background-color: #e74c3c; color: white; border: none; padding: 8px 10px; border-radius: 5px; cursor: pointer; margin-top: 10px;">
+                Delete
+            </button>
+            </div>
+          </div>
+         
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Add Bootstrap JS -->
+  <script src="static/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
