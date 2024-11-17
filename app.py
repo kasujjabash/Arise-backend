@@ -43,6 +43,17 @@ class Video(db.Model):
     youtube_url = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, default = datetime.now(timezone.utc))
     
+#? Devotion model
+class Devotion(db.Model):
+    __tablename__ = 'devotion' #?This is a table name
+    id = db.Column(db.Integer, primary_key = True)
+    devotion_title = db.Column(db.String(150))
+    devotion_description = db.Column(db.String(250))
+    devotion_thumbnail = db.Column(db.String(250))
+    scripture = db.Column(db.String(250), nullable=False)
+    # created_by = db.Column(db.String(150))
+    created_at = db.Column(db.DateTime, default = datetime.now(timezone.utc))
+    
 with app.app_context():
     db.create_all()
 
@@ -219,9 +230,9 @@ def sermon_details():
     return f"This is a sermon detail for sermon with id : {id}"
 #  Update the url to display the sermon name by passing the sermon id 
 
-@app.route('/add_devotions')
-def add_devotions():
-    return render_template('add_devotions.html')
+# @app.route('/add_devotions')
+# def add_devotions():
+#     return render_template('add_devotions.html')
 
 
 #? V I D E O   S E R M O N S
@@ -265,6 +276,48 @@ def add_video():
         return f'We have posted  {video_title}'
     return render_template('/add_video_sermons.html')
 
+#? D E V O T I O N S
+#video sermons route
+@app.route('/devotion_sermons')
+def devotion_sermons():
+    devotions = Devotion.query.all()  # Query all devotions
+    return render_template('devotion_sermons.html', devotions=devotions)
+
+# Add devotion sermon 
+@app.route ('/add_devotions', methods = ['POST', 'GET'])
+
+#function to add devotions
+def add_devotions():
+    if request.method == 'POST':
+        devotion_title = request.form['devotion_title']
+        devotion_description = request.form['devotion_description']
+        scripture = request.form['scripture']
+        # created_by = request.form['created_by']
+        thumbnail = request.files['thumbnail']
+        
+        
+        # get the paths of the images and audio
+        thumbnail_name = secure_filename(thumbnail.filename)
+        
+        #save image path to the server and get the file path
+        thumbnail_path = os.path.join(app.config['UPLOAD_FOLDER']+"/thumbnails" , thumbnail_name)
+        thumbnail.save(thumbnail_path)
+        
+        #adding the form data to the database
+        new_devotion = Devotion(
+            devotion_title = devotion_title,
+            devotion_description = devotion_description,
+            scripture = scripture, 
+            # created_by = created_by,
+            devotion_thumbnail = thumbnail_path
+            )
+        
+        # add data to database
+        db.session.add(new_devotion)
+        db.session.commit()
+
+        return f'We have posted  {devotion_title}'
+    return render_template('/add_devotions.html')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',port=8080,debug=True)

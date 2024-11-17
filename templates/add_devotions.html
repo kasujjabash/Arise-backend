@@ -330,26 +330,26 @@
 
     <div class="container mt-5">
         <h2>Add Today's Devotion</h2><br>
-        <form enctype="multipart/form-data" action="/add_sermons" method="POST">
+        <form enctype="multipart/form-data" action="/add_devotions" method="POST">
             <div class="form-group">
-                <label for="title">Devotion Title</label>
-                <input type="text" class="form-control" id="name" name="name" required>
+                <label for="devotion_title">Devotion Title</label>
+                <input type="text" class="form-control" id="devotion_title" name="devotion_title" required>
             </div><br>
             <div class="form-group">
-                <label for="name">Added by</label>
-                <input type="text" class="form-control" id="name" name="name" required>
+                <label for="created_by">Added by</label>
+                <input type="text" class="form-control" id="created_by" name="created_by" required>
             </div><br>
             <div class="form-group">
                 <label for="Scriptures">Scriptures</label>
-                <input type="text" class="form-control" id="name" name="name" required>
+                <input type="text" class="form-control" id="scripture" name="scripture" required>
             </div><br>
             <div class="form-group">
-              <label for="thumbnail" >Sermon Thumbnail</label>
+              <label for="thumbnail" >Devotion Thumbnail</label>
               <input accept="image/*" type="file" class="form-control" id="thumbnail" name="thumbnail" required>
           </div><br>
             <div class="form-group">
-                <label for="Devotiondescription">Devotion Description</label>
-                <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                <label for="devotion_description">Devotion Description</label>
+                <textarea class="form-control" id="devotion_description" name="devotion_description" rows="3" required></textarea>
             </div><br>
              
            <!-- <div class="form-group">
