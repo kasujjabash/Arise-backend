@@ -127,6 +127,7 @@ def register():
 
 #? -POST Method The POST method is used to send data to the server to create or update resources. It is commonly used when submitting form data or uploading files
 
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 def add_sermons():
     if request.method == 'POST':
         sermon_name = request.form['name']
@@ -277,7 +278,7 @@ def add_video():
     return render_template('/add_video_sermons.html')
 
 #? D E V O T I O N S
-#video sermons route
+#devotions sermons route
 @app.route('/devotion_sermons')
 def devotion_sermons():
     devotions = Devotion.query.all()  # Query all devotions
@@ -286,6 +287,8 @@ def devotion_sermons():
 # Add devotion sermon 
 @app.route ('/add_devotions', methods = ['POST', 'GET'])
 
+
+        
 #function to add devotions
 def add_devotions():
     if request.method == 'POST':
