@@ -4,33 +4,28 @@
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-
   <title>Devotions Sermons - Dashboard</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
-
   <!-- Favicons -->
   <link href="static/assets/img/favicon.png" rel="icon">
   <link href="static/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
-
   <!-- Google Fonts -->
   <link href="https://fonts.gstatic.com" rel="preconnect">
   <link href="https://fonts.googleapis.com/css?family=Nunito:300,400,600,700|Poppins:300,400,500,600,700" rel="stylesheet">
-
   <!-- Vendor CSS Files -->
   <link href="static/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="static/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
   <link href="static/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
   <link href="static/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
   <link href="static/assets/css/style.css" rel="stylesheet">
-
 </head>
 
 <body>
   <!-- Header -->
   <header class="header fixed-top d-flex align-items-center">
     <div class="d-flex align-items-center justify-content-between">
-      <a href="index.html" class="logo d-flex align-items-center">
+      <a href="/" class="logo d-flex align-items-center">
         <img src="static/assets/img/logo.png" alt="Logo">
         <span class="d-none d-lg-block">Arise</span>
       </a>
@@ -52,22 +47,11 @@
 
     <!-- Devotions Grid -->
     <section class="section">
-      <div class="row">
-        {% for devotion in devotions %}
-          <div class="col-lg-4 col-md-6">
-            <div class="card">
-              <img src="{{ devotion.devotion_thumbnail }}" alt="{{ devotion.name }} thumbnail" >  
-                 <div class="card-body">
-                <h5 class="card-title">{{ devotion.devotion_title }}</h5>
-                <p class="card-text text-muted">{{ devotion.scripture }}</p>
-                <p class="card-text">{{ devotion.devotion_description }}</p>
-                <!-- <button class="btn btn-danger w-100 mt-3 delete-btn" data-id="{{ devotion.id }}">
-                  <i class="bi bi-trash"></i> Delete
-                </button> -->
-              </div>
-            </div>
-          </div>
-        {% endfor %}
+      <div class="row" id="devotions-container">
+        <!-- Initial 6 devotions will be loaded here by JavaScript -->
+      </div>
+      <div class="text-center mt-4">
+        <button id="load-more-btn" class="btn btn-primary">Load More</button>
       </div>
     </section>
   </main>
@@ -84,6 +68,54 @@
 
   <!-- Vendor JS Files -->
   <script src="static/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!-- Custom JS for "Load More" Button -->
+  <script>
+    // Initial limit and offset
+    let limit = 6;
+    let offset = 0;
+
+    // Function to load devotions from the backend
+    function loadDevotions() {
+      $.get(`/api/devotions?limit=${limit}&offset=${offset}`, function(devotions) {
+        // Loop through devotions and append them to the container
+        devotions.forEach(function(devotion) {
+          const devotionHtml = `
+            <div class="col-lg-4 col-md-6 devotion-item">
+              <div class="card">
+                <img src="${devotion.devotion_thumbnail}" alt="${devotion.devotion_title} thumbnail" height="200px">
+                <div class="card-body">
+                  <h5 class="card-title">${devotion.devotion_title}</h5>
+                  <p class="card-text text-muted">${devotion.scripture}</p>
+                  <p class="card-text">${devotion.devotion_description}</p>
+                </div>
+              </div>
+            </div>
+          `;
+          $('#devotions-container').append(devotionHtml);
+        });
+
+        // Update the offset for the next load
+        offset += limit;
+
+        // Hide the "Load More" button if no more devotions are available
+        if (devotions.length < limit) {
+          $('#load-more-btn').hide();
+        }
+      });
+    }
+
+    // Load initial devotions on page load
+    $(document).ready(function() {
+      loadDevotions();
+    });
+
+    // Load more devotions when the "Load More" button is clicked
+    $('#load-more-btn').click(function() {
+      loadDevotions();
+    });
+  </script>
 </body>
 
 </html>

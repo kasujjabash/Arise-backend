@@ -4,6 +4,7 @@ from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import desc
 from werkzeug.utils import secure_filename # This is for uploads, Its used to security, 
+from math import ceil
 # from flask import jsonify, request
 # from models.model import Sermon
 
@@ -321,6 +322,46 @@ def add_devotions():
 
         return f'We have posted  {devotion_title}'
     return render_template('/add_devotions.html')
+
+
+@app.route('/api/devotions', methods=['GET'])
+def get_devotions():
+    # Get the limit and offset from the query string (default to 3 devotions at a time)
+    limit = int(request.args.get('limit', 3))
+    offset = int(request.args.get('offset', 0))
+
+    # Query devotions from the database with the specified limit and offset
+    devotions = Devotion.query.offset(offset).limit(limit).all()
+
+    # Prepare the data to return
+    devotions_data = [{
+        'devotion_title': devotion.devotion_title,
+        'devotion_description': devotion.devotion_description,
+        'scripture': devotion.scripture,
+        'devotion_thumbnail': devotion.devotion_thumbnail
+    } for devotion in devotions]
+
+    return jsonify(devotions_data)
+
+@app.route('/api/videos', methods=['GET'])
+def get_videos():
+    # Get the limit and offset from the query string (default to 6 videos at a time)
+    limit = int(request.args.get('limit', 6))
+    offset = int(request.args.get('offset', 0))
+
+    # Query videos from the database with the specified limit and offset
+    videos = Video.query.offset(offset).limit(limit).all()
+
+    # Prepare the data to return
+    videos_data = [{
+        'video_title': video.video_title,
+        'preacher': video.preacher,
+        'youtube_url': video.youtube_url,
+        'id': video.id
+    } for video in videos]
+
+    return jsonify(videos_data)
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',port=8080,debug=True)

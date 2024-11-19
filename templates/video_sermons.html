@@ -4,7 +4,6 @@
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-
   <title>Dashboard - NiceAdmin Bootstrap Template</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
@@ -35,36 +34,71 @@
   <h3 class="text-center my-4">Videos Sermons</h3>
 
   <div class="container">
-    <div class="row">
+    <div class="row" id="videos-container">
       <!-- Loop through all the videos and display them in 3 columns -->
-      {% for video in videos %}
-        <div class="col-md-4 mb-4">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">{{ video.video_title }}</h5>  <!-- Video title -->
-              <h6 class="card-subtitle mb-2 text-muted">Preacher: {{ video.preacher }}</h6>  <!-- Preacher name -->
-              <iframe width="100%" height="250" 
-                      src="{{ video.youtube_url }}" 
-                      frameborder="0" 
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                      allowfullscreen>
-              </iframe>  <!-- YouTube video embed -->
-              
-              <!-- Delete button -->
-               <!-- TODO Make this button work for deleting the sermon -->
-              <button class="delete-btn" data-id="{{ video.id }}" style="background-color: #e74c3c; color: white; border: none; padding: 8px 10px; border-radius: 5px; cursor: pointer; margin-top: 10px;">
-                Delete
-            </button>
-            </div>
-          </div>
-         
-        </div>
-      {% endfor %}
+     
+    </div>
+
+    <!-- Load More Button -->
+    <div class="text-center mt-4">
+      <button id="load-more-btn" class="btn btn-primary">Load More</button>
     </div>
   </div>
 
   <!-- Add Bootstrap JS -->
   <script src="static/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!-- Custom JS for "Load More" Button -->
+  <script>
+    // Initial limit and offset for loading more videos
+    let limit = 6;
+    let offset = 0;
+
+    // Function to load videos from the backend
+    function loadVideos() {
+      $.get(`/api/videos?limit=${limit}&offset=${offset}`, function(videos) {
+        // Loop through the videos and append them to the container
+        videos.forEach(function(video) {
+          const videoHtml = `
+            <div class="col-md-4 mb-4">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">${video.video_title}</h5>
+                  <h6 class="card-subtitle mb-2 text-muted">Preacher: ${video.preacher}</h6>
+                  <iframe width="100%" height="250" src="${video.youtube_url}" frameborder="0" 
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                  <!-- Delete button -->
+                  <button class="delete-btn" data-id="${video.id}" style="background-color: #e74c3c; color: white; border: none; padding: 8px 10px; border-radius: 5px; cursor: pointer; margin-top: 10px;">
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+          $('#videos-container').append(videoHtml);
+        });
+
+        // Update the offset for the next load
+        offset += limit;
+
+        // Hide the "Load More" button if no more videos are available
+        if (videos.length < limit) {
+          $('#load-more-btn').hide();
+        }
+      });
+    }
+
+    // Load initial videos on page load
+    $(document).ready(function() {
+      loadVideos();
+    });
+
+    // Load more videos when the "Load More" button is clicked
+    $('#load-more-btn').click(function() {
+      loadVideos();
+    });
+  </script>
 </body>
 
 </html>
